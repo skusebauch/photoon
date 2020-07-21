@@ -3,13 +3,20 @@ const gallery = document.querySelector(".gallery");
 const searchInput = document.querySelector(".search-input");
 const form = document.querySelector(".search-form");
 let searchValue;
+const more = document.querySelector(".more");
+let pageNr = 1;
+let fetchLink;
+let currentSearch;
 
 // EventListeners
 searchInput.addEventListener("input", updateInput);
 form.addEventListener("submit", (event) => {
   event.preventDefault();
+  currentSearch = searchValue;
   searchPhotos(searchValue);
 });
+
+more.addEventListener("click", loadMore);
 
 function updateInput(event) {
   searchValue = event.target.value;
@@ -45,24 +52,33 @@ function generatePicsMarkup(data) {
 
 // Getting Photos "curated photos from the doc"
 async function curatedPhotos() {
-  const data = await fetchApi(
-    "https://api.pexels.com/v1/curated?per_page=15?page=1"
-  );
+  fetchLink = "https://api.pexels.com/v1/curated?per_page=15&page=1";
+  const data = await fetchApi(fetchLink);
   generatePicsMarkup(data);
 }
 
 // Getting phots from searchinput
 async function searchPhotos(search) {
   clearSearch();
-  const data = await fetchApi(
-    `https://api.pexels.com/v1/search?query=${search}&per_page=15?page=1`
-  );
+  fetchLink = `https://api.pexels.com/v1/search?query=${search}&per_page=15&page=1`;
+  const data = await fetchApi(fetchLink);
   generatePicsMarkup(data);
 }
 
 function clearSearch() {
   gallery.innerHTML = "";
   searchInput.value = "";
+}
+
+async function loadMore() {
+  pageNr++;
+  if (currentSearch) {
+    fetchLink = `https://api.pexels.com/v1/search?query=${currentSearch}&per_page=15&page=${pageNr}`;
+  } else {
+    fetchLink = `https://api.pexels.com/v1/curated?per_page=15&page=${pageNr}`;
+  }
+  const data = await fetchApi(fetchLink);
+  generatePicsMarkup(data);
 }
 
 curatedPhotos();
