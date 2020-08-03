@@ -60,6 +60,7 @@ header h2 {
   cursor: pointer;
   border-top-right-radius: 1rem;
   border-bottom-right-radius: 1rem;
+  margin-left: -2px;
 }
 
 .gallery-info {
